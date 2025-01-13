@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--<meta http-equiv="refresh" content="5">-->
+<meta name="viewport" content="width=device-width, initial-scale=1"></head>
+
+
+<style>
+#cardTitleContent{
+    font-size: 20px;
+    text-align: center;
+    position: absolute;
+    font-weight: bold;
+    line-height: 10px;
+}
+
+.dataPoints{
+    position: absolute;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 120px;
+    left: 85px;
+}
+
+
+
+#title {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    color: #ffffff;
+    background-color: #484a43;
+    padding: 10px 0;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 800px;
+    position: relative;
+    top: -20px;
+}
+
+#menu {
+
+    position: relative;
+    background-color: #466478; 
+    width: 800px; 
+    height: 330px; 
+    top: 100px;
+    left: 200px;
+    z-index: 1;
+
+    border-radius: 10px;
+    border-style: solid;
+    border-color: #ffffff;
+    border-width: 2px
+}
+
+
+
+.menuTitles{
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+    color: #ffffff;
+    display: inline-block;
+}
+
+
+#pressureandtemperatureText{font-size: 25px; color: #ffffff;}
+#pressureandtemperatureText:hover{font-size: 28px; color: #c6c6c6;}
+
+#NDVItext{top: 105px; left: 50px;}
+#NDVItext:hover{top: 100px; left: 45px; font-size: 45px; color: #c6c6c6;}
+
+#CanMotiontext{top: 80px; left: 38px;}
+#CanMotiontext:hover{top: 70px; left: 33px; font-size: 45px; color: #c6c6c6;}
+
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 10; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modalContent {
+    display: none;
+    background-color: #213039;
+    height: 600px; 
+    width: 1200px; 
+  
+    top: -20px; 
+    left: 140px; 
+    position: relative;
+    
+    /*overflow: auto;  Enable scroll if needed */
+
+    border-radius: 10px;
+    border-style: solid;
+    border-color: #ffffff;
+    border-width: 2px;
+
+}
+
+#ChartContainer-PvT {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 1px 1px 8px 1px;
+    box-sizing: border-box;
+}
+
+
+</style>
+
+<body style="margin: 0; background-color: #213039; padding: 0;">
+
+<h1 id="title"><b>CanSat Dashboard</b></h1>
+<br>
+<br>
+
+<!--Menu Content-->
+
+<div id="menu">
+    <div id="pressureandtemperature" style="left: 40px; background-color: #466478; height: 330px; width: 200px; position: relative; background-image: url('Pressure&Temperature.png'); background-size: 90% 90%; background-repeat: no-repeat; background-position: center;">
+        <p id="pressureandtemperatureText" style="top: 110px; font-weight: bold; text-align: center; position: relative; display: inline-block; -webkit-user-select: none; -ms-user-select: none; user-select: none;" onclick="document.getElementById('modalContainer').style.display='block'; document.getElementById('PressureTemperature-Modal').style.display='block'; document.getElementById('NDVI-Modal').style.display='none'; document.getElementById('CanMotion-Modal').style.display='none';">Pressure & Temperature</p>
+    </div>
+
+
+    <div id="NDVI" style="position: relative; background-color: #466478; height: 330px; width: 200px; left: 300px; top: -330px; background-image: url('NDVI.png'); background-size: 90% 90%; background-repeat: no-repeat; background-position: center;">
+        <p class="menuTitles" id="NDVItext" style="-webkit-user-select: none; -ms-user-select: none; user-select: none;" onclick="document.getElementById('modalContainer').style.display='block'; document.getElementById('PressureTemperature-Modal').style.display='none'; document.getElementById('NDVI-Modal').style.display='block'; document.getElementById('CanMotion-Modal').style.display='none';">NDVI</p>
+    </div>
+
+
+    <div id="CanMotion" style="position: relative; background-color: #466478; height: 330px; width: 200px; left: 560px; top: -660px; background-image: url('CanMotion.png'); background-size: 90% 90%; background-repeat: no-repeat; background-position: center;">
+        <p class="menuTitles" id="CanMotiontext" style="-webkit-user-select: none; -ms-user-select: none; user-select: none;" onclick="document.getElementById('modalContainer').style.display='block'; document.getElementById('PressureTemperature-Modal').style.display='none'; document.getElementById('NDVI-Modal').style.display='none'; document.getElementById('CanMotion-Modal').style.display='block';">Can<br>Motion</p>
+    </div>
+</div>
+
+
+
+
+<div class="modal" id="modalContainer">
+    
+    <div id="PressureTemperature-Modal" class="modalContent">
+        <p style="text-align: center; color: #ffffff; font-family: 'Lucida Console', 'Courier New', monospace; font-size: 30px; line-height: 90px;"><u>Pressure & Temperature</u></p>
+    
+         <!--Pressure vs temperature-->
+         <div id="ChartContainer-PvT" style="left: 80px; top: 0px;" class="Tooltip">
+            <canvas id="PressureTemperatureChart" style="height: 400px; width: 400px;"></canvas>
+            <div style="text-align: center; background-color: #555; width: 300px; top: 10px; border-radius: 10px; position: relative; color: #ffffff; -webkit-user-select: none; -ms-user-select: none; user-select: none;">
+                This graph demonstrates the relationship between pressure and temperature. <br>
+                Gay-Lussac's Law: P∝T
+            </div>
+        </div>
+
+         <!--Pressure vs Altitude-->
+         <div id="ChartContainer-PvT" style="left: 450px; top: -300px;" class="Tooltip">
+            <canvas id="PressureAltitudeChart" style="height: 400px; width: 400px;"></canvas>
+            <div style="text-align: center; background-color: #555; width: 300px; top: 10px; border-radius: 10px; position: relative; color: #ffffff; -webkit-user-select: none; -ms-user-select: none; user-select: none;">
+                This graph demonstrates the relationship between pressure and altitude. <br>
+                Barometric Formula: P=P0e^(-Mgh/kT)
+            </div>
+        </div>
+
+         <!--Temperature vs Altitude-->
+         <div id="ChartContainer-PvT" style="left: 820px; top: -600px">
+            <canvas id="TemperatureAltitudeChart" style="height: 400px; width: 400px;"></canvas>
+            <div style="text-align: center; background-color: #555; width: 300px; top: 10px; border-radius: 10px; position: relative; color: #ffffff; -webkit-user-select: none; -ms-user-select: none; user-select: none;">
+                This graph demonstrates the relationship between temperature and altitude. <br>
+                Adiabatic Lapse Rate: T∝h
+            </div>
+        </div>
+    </div>
+
+    <div id="NDVI-Modal" class="modalContent">
+        <p style="text-align: center; color: #ffffff; font-family: 'Lucida Console', 'Courier New', monospace; font-size: 30px; line-height: 70px;"><u>NDVI</u></p>
+    </div>
+
+    <div id="CanMotion-Modal" class="modalContent">
+        <p style="text-align: center; color: #ffffff; font-family: 'Lucida Console', 'Courier New', monospace; font-size: 30px; line-height: 70px;"><u>Can Motion</u></p>
+    </div>
+
+</div>
+
+<!--End of Menu Content-->
+
+
+
+
+<!--Importing chart module-->
+<!--For web only: <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
+<script src="/chart.umd.js"></script>
+
+<!--Importing regression module-->
+<!--<script src="https://cdn.jsdelivr.net/npm/regression"></script>-->
+<script src="/regression.min.js"></script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", (event) => {
+
+    //aligning all the page elements to the center
+    alignElements();
+    
+    //updating the data every 5 seconds#
+    setInterval(function() {sendRequest("Write-Data", null);}, 5000);
+
+
+    //closing the modal whenever the user clicks out
+    window.onclick=function(event) {
+        if(event.target==document.getElementById('modalContainer')) {
+            document.getElementById('modalContainer').style.display='none';
+        }
+    }
+
+
+
+    //response headers include 1.0 (write sensor data)
+
+    function sendRequest(req, data) {
+
+        console.log(req);
+        //formatting for req: "Custom-Type"
+
+        //setting up connection
+        const xhr=new XMLHttpRequest();
+        xhr.open("GET", "http://192.168.4.1", true);
+        xhr.setRequestHeader(req, data);
+
+        //handling response
+        xhr.onload=function() {
+            if(xhr.status==200) {
+                var response=xhr.responseText;
+                console.log("Response recieved!");
+                if(response!="LOL") {
+                    var data=convert_string_to_array(response);
+                    if(data[0]==1.0) {
+                        //update_dashboard_sensor_data(data);
+                    }
+                    console.log(data);
+                }
+                else {
+                    console.log(response);
+                }
+                
+
+            }
+            else {
+                console.log("An error has occured!");
+            }
+        };
+
+        //error handling
+        xhr.onerror=function() {
+            console.log("Request failed!");
+        };
+        xhr.send(); //send request
+    }
+
+
+    function convert_string_to_array(response) {
+        response=response.split(",");
+
+        data=[];
+        for(var i=0; i<response.length; i++) {
+            item=response[i];
+            data.push(parseFloat(item)); //converting each item (string) to float and appending it into 'data'
+        }
+        return data;
+    }
+
+    function update_dashboard_sensor_data(data) {
+        pressure=data[1];
+        temperature=data[2];
+        NDVI_Index=data[3];
+        acceleration=data[4];
+
+        document.getElementById("pressureDataPoint").innerHTML=pressure;
+        document.getElementById("temperatureDataPoint").innerHTML=temperature;
+        document.getElementById("NDVI_IndexDataPoint").innerHTML=NDVI_Index;
+        document.getElementById("accelerationDataPoint").innerHTML=acceleration;
+    }
+
+
+
+    function createChartConfig(label, data, xAxisLabel, yAxisLabel, dataPointColor, bestFitData, regressionType, regressionColor) {
+        return {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: label,
+                    data: data,
+                    backgroundColor: dataPointColor
+                },
+                {
+                    type: 'line',
+                    label: regressionType+' of best fit',
+                    data: bestFitData,
+                    backgroundColor: regressionColor,
+                    borderColor: regressionColor,
+                    borderWidth: 1,
+                    pointRadius: 0 //removing the points on the line
+                }]
+            },
+            options: {
+                scales: {
+                    x:{type: 'linear', position: 'bottom', beginAtZero: true, title: {display: true, text: xAxisLabel}},
+                    y:{beginAtZero: true, title: {display: true, text: yAxisLabel}}
+                }
+            }
+        };
+    }
+
+    
+    function calculate_linear_regression(dataset) {
+
+        sum_xy=0;
+        sum_x2=0
+        sum_y2=0;
+        sum_x=0;
+        sum_y=0;
+
+        max_x_value=0;
+
+        //filling in the variables above
+        for(var index=0; index<dataset.length; index++) {
+            x=dataset[index].x;
+            y=dataset[index].y;
+
+            //finding the maximum x value
+            if(x>max_x_value) {
+                max_x_value=x;
+            }
+
+            sum_xy+=x*y;
+            sum_x2+=x*x;
+            sum_y2+=y*y;
+            sum_x+=x;
+            sum_y+=y;
+        }
+
+        //calculating the slope
+        n=dataset.length;
+        slope=(n*sum_xy-sum_x*sum_y)/(n*sum_x2-sum_x*sum_x);
+        y_intercept=(sum_y-slope*sum_x)/n;
+
+        //equation of line: y=slope*x+y_intercept
+        
+        bestFitData=[{x: 0, y: y_intercept}, {x: max_x_value, y: slope*max_x_value+y_intercept}];
+    
+        return bestFitData;
+    }
+
+
+
+
+
+
+
+    function calculate_exponential_regression(dataset) {
+        //retrieving the x and y values from the dataset
+        
+        var x_values=dataset.map(p => p.x);
+        var y_values=dataset.map(p => p.y);
+
+        var max_x=Math.max(...x_values);
+
+        var newDataset=[];
+        for(var i=0; i<x_values.length; i++) {
+            newDataset.push([x_values[i], y_values[i]]);
+        }
+
+        //generating coefficients for the exponential regression
+        //var result=regression.polynomial(newDataset, {order: 2}); //for polynomial regression
+        var result=regression.exponential(newDataset, {order: 2});
+        
+        //generating the best fit data
+        var curveData=[];
+        for(var x=0; x<=max_x; x+=0.1) {
+            var y=result.predict(x)[1];
+            curveData.push({x: x, y: y});
+        }
+        
+        return curveData;
+    }
+
+
+
+
+
+
+    function drawCharts(PressureTemperatureData, PressureAltitudeData, TemperatureAltitudeData) {
+
+        //delete later (only for testing)
+        var PressureTemperatureData=[{x: 1, y: 23}, {x: 2, y: 47}, {x: 3, y: 89}, {x: 4, y: 149}, {x: 5, y: 348}, {x: 6, y: 512}]; 
+        var PressureAltitudeData=[{x: 0, y: 101.325}, {x: 1000, y: 89.874}, {x: 2000, y: 79.495}, {x: 3000, y: 70.142}, {x: 4000, y: 61.802}, {x: 5000, y: 54.450}];
+        var TemperatureAltitudeData=[{x: 0, y: 0}, {x: 10, y: 30}, {x: 20, y: 60}, {x: 30, y: 90}, {x: 40, y: 120}, {x: 50, y: 150}];
+
+        //calculate regression
+        bestFitData_PvT=calculate_exponential_regression(PressureTemperatureData);
+        bestFitData_PvA=calculate_linear_regression(PressureAltitudeData);
+        bestFitData_TvA=calculate_linear_regression(TemperatureAltitudeData);
+
+        //creating chart configurations
+        var config_P_T=createChartConfig('Pressure vs Temperature', PressureTemperatureData, 'Temperature', 'Pressure', 'rgb(75, 192, 192)', bestFitData_PvT, 'curve', 'black');
+        var config_P_A=createChartConfig('Pressure vs Altitude', PressureAltitudeData, 'Altitude', 'Pressure', 'rgb(192, 75, 75)', bestFitData_PvA, 'line', 'black');
+        var config_T_A=createChartConfig('Temperature vs Altitude', TemperatureAltitudeData, 'Altitude', 'Temperature', 'rgb(75, 192, 91)', bestFitData_TvA, 'line', 'black');
+
+        //rendering charts
+        new Chart(document.getElementById('PressureTemperatureChart').getContext('2d'), config_P_T);
+        new Chart(document.getElementById('PressureAltitudeChart').getContext('2d'), config_P_A);
+        new Chart(document.getElementById('TemperatureAltitudeChart').getContext('2d'), config_T_A);
+        
+    }
+    drawCharts(0,0,0);
+
+});
+
+
+
+
+
+
+
+
+function alignElements() {
+    //retreiving constants
+    deviceWidth=screen.width;
+    menuWidth=800;//should match with the width of the menu
+    modalWidth=1200;//should match with the width of the menu modal (the popup)
+
+    //calculating the left alignment of the modal
+    leftAlignModal=((deviceWidth/2)-(modalWidth/2));
+    if(leftAlignModal<0) {leftAlignModal=0;}
+
+    //calculting the left alignment of the menu
+    leftAlign=((deviceWidth/2)-menuWidth/2);
+    if(leftAlign<0) {leftAlign=0;}
+
+    console.log("Device width:", deviceWidth);
+
+    //centering the menu
+    document.getElementById("menu").style.left=leftAlign+'px';
+    //centering the title
+    document.getElementById("title").style.width=deviceWidth+"px";
+    //centering the modals
+    document.getElementById("PressureTemperature-Modal").style.left=leftAlignModal+'px';
+    document.getElementById("NDVI-Modal").style.left=leftAlignModal+'px';
+    document.getElementById("CanMotion-Modal").style.left=leftAlignModal+'px';
+}
+
+
+
+
+</script>
+
+<button style="width: 50px; height: 50px; color: #ffffff; background-color: #3fb81a;" onclick="sendRequest('Switch-On', null);">Turn on LED!</button>
+<button style="width: 50px; height: 50px; color: #ffffff; background-color: #b81a1a;" onclick="sendRequest('Switch-Off', null);">Turn off LED!</button>
+<!--<button style="width: 50px; height: 50px; color: #ffffff; background-color: #26d9d6;" onclick="sendRequest('Write-Data', null);">Write Data!</button>-->
+
+
+</body>
+</html>
