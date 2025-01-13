@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Cube Viewer</title>
+    <!-- Import Model Viewer library -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0f0f0;
+      }
+
+      model-viewer {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Model Viewer with a sample cube model -->
+    <model-viewer
+      src="https://modelviewer.dev/shared-assets/models/cube.gltf"
+      alt="A 3D cube"
+      auto-rotate
+      camera-controls
+      shadow-intensity="1">
+    </model-viewer>
+  </body>
+</html>

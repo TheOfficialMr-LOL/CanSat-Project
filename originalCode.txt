@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--<meta http-equiv="refresh" content="5">-->
+<meta name="viewport" content="width=device-width, initial-scale=1"></head>
+
+<style>
+
+#cardTitleContent{
+    font-size: 20px;
+    text-align: center;
+    position: absolute;
+    font-weight: bold;
+    line-height: 10px;
+}
+
+.dataPoints{
+    position: absolute;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 120px;
+    left: 85px;
+}
+
+</style>
+
+<body style="margin: 0;">
+
+<h1 style="text-align: center; background-color: darkolivegreen; color: #ffffff; font-size: 40px; height: 50px; line-height: 40px;"><b>Raspberry Pi Pico Dashboard</b></h1>
+<br>
+<br>
+<div style="width: 600px; height: 380px; background-color: antiquewhite; border-width: 2px; border-color: black; border-style: solid; position: absolute; left: 470px;">
+    <div id="Pressure" style="position: relative; width: 250px; height: 150px; background-color: #ffffff; left: 10px; top: 10px; box-shadow: 1px 1px 8px 1px;"><p id="cardTitleContent" style="left: 80px; color: #8a22ec;">Pressure</p><p class="dataPoints" style="color: #8a22ec;" id="pressureDataPoint">P0.00</p></div>
+    <div id="Temperature" style="position: relative; width: 250px; height: 150px; background-color: #ffffff; right: -335px; top: -140px; box-shadow: 1px 1px 8px 1px;"><p id="cardTitleContent" style="left: 70px; color: #3fb81a;">Temperature</p><p class="dataPoints" style="color: #3fb81a;" id="temperatureDataPoint">T0.00</p></div>
+    <div id="NDVI Index" style="position: relative; width: 250px; height: 150px; background-color: #ffffff; left: 10px; bottom: 100px; box-shadow: 1px 1px 8px 1px;"><p id="cardTitleContent" style="left: 70px; color: #bb1818;">NDVI Index</p><p class="dataPoints" style="color: #bb1818;" id="NDVI_IndexDataPoint">N0.00</p></div>
+    <div id="Acceleration" style="position: relative; width: 250px; height: 150px; background-color: #ffffff; right: -335px; bottom: 250px; box-shadow: 1px 1px 8px 1px;"><p id="cardTitleContent" style="left: 75px; color: #20a9db;">Acceleration</p><p class="dataPoints" style="color:#20a9db" id="accelerationDataPoint">A0.00</p></div>
+</div>
+<br>
+<br>
+<button style="width: 50px; height: 50px; color: #ffffff; background-color: #3fb81a;" onclick="sendRequest('Switch-On', null);">Turn on LED!</button>
+<button style="width: 50px; height: 50px; color: #ffffff; background-color: #b81a1a;" onclick="sendRequest('Switch-Off', null)">Turn off LED!</button>
+<!--<button style="width: 50px; height: 50px; color: #ffffff; background-color: #26d9d6;" onclick="sendRequest('Write-Data', null)">Write Data!</button>-->
+</body>
+<script>
+
+    //updating the data every 5 seconds
+    
+    setInterval(function() {sendRequest("Write-Data", null);}, 5000);
+
+
+    //response headers include 1.0 (write sensor data)
+    function sendRequest(req, data) {
+
+        console.log(req);
+        //formatting for req: "Custom-Type"
+
+        //setting up connection
+        const xhr=new XMLHttpRequest();
+        xhr.open("GET", "http://192.168.4.1", true)
+        xhr.setRequestHeader(req, data);
+
+        //handling response
+        xhr.onload=function() {
+            if(xhr.status==200) {
+                var response=xhr.responseText;
+                console.log("Response recieved!");
+                if(response!="LOL") {
+                    var data=convert_string_to_array(response);
+                    if(data[0]==1.0) {
+                        update_dashboard_sensor_data(data);
+                    }
+                    console.log(data)
+                }
+                else {
+                    console.log(response);
+                }
+                
+
+            }
+            else {
+                console.log("An error has occured!");
+            }
+        };
+
+        //error handling
+        xhr.onerror=function() {
+            console.log("Request failed!");
+        };
+        xhr.send(); //send request
+    }
+
+
+    function convert_string_to_array(response) {
+        response=response.split(",");
+
+        data=[];
+        for(var i=0; i<response.length; i++) {
+            item=response[i]
+            data.push(parseFloat(item)) //converting each item (string) to float and appending it into 'data'
+        }
+        return data
+    }
+
+    function update_dashboard_sensor_data(data) {
+        pressure=data[1];
+        temperature=data[2];
+        NDVI_Index=data[3];
+        acceleration=data[4];
+
+        document.getElementById("pressureDataPoint").innerHTML=pressure;
+        document.getElementById("temperatureDataPoint").innerHTML=temperature;
+        document.getElementById("NDVI_IndexDataPoint").innerHTML=NDVI_Index;
+        document.getElementById("accelerationDataPoint").innerHTML=acceleration;
+    }
+</script>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+#chartContainer {
+    width: 300px; /* Adjust the width as needed */
+    height: 300px; /* Adjust the height as needed */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add some padding if needed */
+    background-color: #f0f0f0; /* Optional: Add a background color */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+    border-radius: 5px;
+}
+
+canvas {
+    width: 100%;
+    height: 200%;
+}
+
+canvas:hover {width: 300%; height: 600%;}
+</style>
+</head>
+<body style="background-color: rgb(0, 0, 0);">
+<h1>LOL</h1>
+<div id="chartContainer">
+    <canvas id="myChart" style="height: 100%; border-radius: 5px;"></canvas>
+</div>
+<div style="color: rgb(75, 192, 91)"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Scatter chart configuration
+
+var graphValues=[{x: 0, y: 0}, {x: 0, y: 10}, {x: 10, y: 5}];
+
+
+const data = {
+    datasets: [{
+        label: 'Scatter Dataset',
+        data: graphValues,
+        backgroundColor: 'rgba(75, 192, 192, 1)'
+    }]
+};
+
+const config = {
+    type: 'scatter',
+    data: data,
+    options: {
+        scales: {
+            x: {type: 'linear', position: 'bottom', beginAtZero: true, title: {display: true, text: 'Temperature'}},
+            y: {beginAtZero: true, title: {display: true, text: 'Pressure'}}
+        }
+    }
+};
+
+// Render chart
+const ctx = document.getElementById('myChart').getContext('2d');
+const chart = new Chart(ctx, config);
+</script>
+</body>
+</html>
